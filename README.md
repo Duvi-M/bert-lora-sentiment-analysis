@@ -79,8 +79,10 @@ Main tools used in this project:
 
 ---
 
+
 # Project Structure
 
+```text
 bert-lora-sentiment-analysis
 │
 ├── data/ # dataset storage
@@ -101,7 +103,7 @@ bert-lora-sentiment-analysis
 ├── README.md
 └── .gitignore
 
-
+```
 ---
 
 # Training Pipeline
