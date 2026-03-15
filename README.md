@@ -46,5 +46,145 @@ This project evaluates two training approaches:
 
 Standard transformer fine-tuning where **all model parameters are updated** during training.
 
-Model:
+Model: bert-base-uncased
+
+
+## 2. Parameter-Efficient Fine-Tuning (LoRA)
+
+Instead of updating all parameters, **LoRA introduces small trainable low-rank matrices** inside attention layers.
+
+Advantages:
+
+- drastically fewer trainable parameters
+- faster training
+- lower memory usage
+- similar performance
+
+Library used: PEFT (Parameter Efficient Fine-Tuning)
+
+
+---
+
+# Technology Stack
+
+Main tools used in this project:
+
+- Python
+- PyTorch
+- Hugging Face Transformers
+- Hugging Face Datasets
+- PEFT (LoRA)
+- Scikit-learn
+- TensorBoard / Weights & Biases (optional)
+
+---
+
+# Project Structure
+
+bert-lora-sentiment-analysis
+│
+├── data/ # dataset storage
+├── notebooks/ # exploration and visualization
+│
+├── src/
+│ ├── data.py # dataset loading
+│ ├── model.py # model definition
+│ ├── train.py # training pipeline
+│ ├── evaluate.py # evaluation metrics
+│ └── utils.py # helper functions
+│
+├── configs/ # experiment configurations
+├── experiments/ # experiment outputs
+├── results/ # evaluation results
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
+
+
+---
+
+# Training Pipeline
+
+The training process follows these steps:
+
+1. Load the IMDb dataset
+2. Tokenize text using a BERT tokenizer
+3. Train baseline BERT with full fine-tuning
+4. Train BERT with LoRA adaptation
+5. Evaluate both models
+6. Compare performance and efficiency
+
+---
+
+# Evaluation Metrics
+
+Models are evaluated using:
+
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- Confusion matrix
+
+Additional analysis:
+
+- number of trainable parameters
+- training efficiency
+- model performance comparison
+
+---
+
+# Example Results
+
+Example comparison (expected):
+
+| Model | Trainable Parameters | Accuracy | F1 Score |
+|------|------|------|------|
+| BERT Fine-Tuning | 110M | ~0.94 | ~0.94 |
+| BERT + LoRA | <1M | ~0.93 | ~0.93 |
+
+LoRA maintains competitive performance while dramatically reducing the number of trainable parameters.
+
+---
+
+# Running the Project
+
+Install dependencies: pip install -r requirements.txt
+
+Train the baseline model: python src/train.py
+
+
+Evaluate the model: python src/evaluate.py
+
+
+---
+
+# Future Improvements
+
+Possible extensions of this project include:
+
+- testing other transformer models (RoBERTa, DistilBERT)
+- hyperparameter optimization
+- training efficiency analysis
+- experiment tracking with Weights & Biases
+- deployment of the trained model as an API
+
+---
+
+# Author
+
+Duvan Mendoza  
+MSc Software Engineering & Big Data  
+MEPhI (Moscow Engineering Physics Institute)
+
+Focus areas:
+
+- Machine Learning
+- NLP
+- Transformer Models
+- Parameter-Efficient Fine-Tuning
+
+
+
 
