@@ -1,0 +1,36 @@
+seed: 42
+output_dir: outputs/colab_budget_192
+
+dataset:
+  name: imdb
+  train_size: 2000
+  test_size: 1000
+  max_length: 256
+
+model:
+  name: bert-base-uncased
+  num_labels: 2
+
+training:
+  epochs: 2
+  batch_size: 8
+  learning_rate: 0.00005
+  logging_steps: 50
+
+lora:
+  alpha: 16
+  dropout: 0.1
+  target_modules:
+    - query
+    - value
+
+baseline_lora:
+  r: 8
+
+adaptive_lora:
+  algorithm: gradient_aware
+  min_rank: 2
+  max_rank: 8
+  rank_step: 2
+  total_budget: 192
+  warmup_steps: 20
