@@ -83,26 +83,28 @@ Main tools used in this project:
 # Project Structure
 
 ```text
-bert-lora-sentiment-analysis
+DULoRA-Dynamic-Utility-based-LoRA-Rank-Allocation/
 │
-├── data/ # dataset storage
-├── notebooks/ # exploration and visualization
+├── configs/
+│   └── default.yaml
+│
+├── outputs/
+│   └── .gitkeep
 │
 ├── src/
-│ ├── data.py # dataset loading
-│ ├── model.py # model definition
-│ ├── train.py # training pipeline
-│ ├── evaluate.py # evaluation metrics
-│ └── utils.py # helper functions
+│   ├── __init__.py
+│   ├── data.py
+│   ├── model.py
+│   ├── rank_allocator.py
+│   ├── experiment.py
+│   ├── plots.py
+│   ├── utils.py
+│   └── evaluate.py
 │
-├── configs/ # experiment configurations
-├── experiments/ # experiment outputs
-├── results/ # evaluation results
-│
+├── run_experiment.py
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-
 ```
 ---
 
@@ -186,7 +188,6 @@ Focus areas:
 - NLP
 - Transformer Models
 - Parameter-Efficient Fine-Tuning
-
 
 
 
