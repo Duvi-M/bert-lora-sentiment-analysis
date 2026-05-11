@@ -20,7 +20,10 @@ def collect_gradient_layer_scores(model, dataloader, max_steps: int, device: str
         if steps >= max_steps:
             break
 
-        batch = {key: value.to(device) for key, value in batch.items()}
+        batch = {
+            key: value.to(device) if hasattr(value, "to") else value
+            for key, value in batch.items()
+        }
 
         # Hugging Face espera "labels", pero el dataset IMDb trae "label"
         if "label" in batch and "labels" not in batch:

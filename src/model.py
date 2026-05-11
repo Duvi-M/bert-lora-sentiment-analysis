@@ -1,11 +1,36 @@
-from transformers import AutoModelForSequenceClassification
+from transformers import (
+    AutoModelForImageClassification,
+    AutoModelForSequenceClassification,
+)
 from peft import LoraConfig, get_peft_model
 
 
+IMAGE_TASKS = {"image"}
+TEXT_TASKS = {"sentiment", "topic"}
+
+
 def load_base_model(config: dict):
-    return AutoModelForSequenceClassification.from_pretrained(
-        config["model"]["name"],
-        num_labels=config["model"]["num_labels"],
+    task_type = config.get("task_type", "sentiment")
+    model_name = config["model"]["name"]
+    num_labels = config["model"]["num_labels"]
+
+    if task_type in TEXT_TASKS:
+        return AutoModelForSequenceClassification.from_pretrained(
+            model_name,
+            num_labels=num_labels,
+        )
+
+    if task_type in IMAGE_TASKS:
+        return AutoModelForImageClassification.from_pretrained(
+            model_name,
+            num_labels=num_labels,
+            ignore_mismatched_sizes=True,
+        )
+
+    supported_tasks = sorted(TEXT_TASKS | IMAGE_TASKS)
+    raise ValueError(
+        f"Unsupported task_type '{task_type}'. "
+        f"Supported tasks are: {supported_tasks}."
     )
 
 
@@ -34,3 +59,12 @@ def build_lora_model(config: dict, rank_pattern=None, r=None):
     lora_config = LoraConfig(**lora_config_kwargs)
 
     return get_peft_model(base_model, lora_config)
+
+
+def list_lora_target_module_candidates(config: dict, keywords=("query", "value")):
+    model = load_base_model(config)
+    return [
+        name
+        for name, _ in model.named_modules()
+        if any(keyword in name for keyword in keywords)
+    ]

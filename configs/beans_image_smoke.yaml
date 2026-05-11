@@ -1,0 +1,38 @@
+task_type: image
+seed: 42
+experiment_name: beans_image_smoke
+output_dir: outputs
+
+dataset:
+  name: beans
+  image_column: image
+  train_size: 32
+  test_size: 16
+
+model:
+  name: google/vit-base-patch16-224-in21k
+  num_labels: 3
+
+training:
+  epochs: 1
+  batch_size: 4
+  learning_rate: 0.00005
+  logging_steps: 5
+
+lora:
+  alpha: 16
+  dropout: 0.1
+  target_modules:
+    - query
+    - value
+
+baseline_lora:
+  r: 8
+
+adaptive_lora:
+  algorithm: gradient_aware
+  min_rank: 2
+  max_rank: 8
+  rank_step: 2
+  total_budget: 96
+  warmup_steps: 3
