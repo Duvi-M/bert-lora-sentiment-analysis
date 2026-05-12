@@ -11,9 +11,21 @@ import matplotlib.pyplot as plt
 
 
 EXPERIMENTS = [
-    {"budget": 96, "path": Path("outputs/colab_budget_96_seedfix")},
-    {"budget": 144, "path": Path("outputs/colab_budget_144_seedfix")},
-    {"budget": 192, "path": Path("outputs/colab_budget_192_seedfix")},
+    {
+        "experiment_name": "fair_budget_96",
+        "budget": 96,
+        "path": Path("outputs/fair_budget_96"),
+    },
+    {
+        "experiment_name": "fair_budget_144",
+        "budget": 144,
+        "path": Path("outputs/fair_budget_144"),
+    },
+    {
+        "experiment_name": "fair_budget_192",
+        "budget": 192,
+        "path": Path("outputs/fair_budget_192"),
+    },
 ]
 
 FINAL_PLOTS_DIR = Path("outputs/final_plots")
@@ -52,17 +64,27 @@ def read_key_value_csv(path: Path, key_field: str, value_field: str, value_type=
     return values
 
 
+def read_table_csv(path: Path):
+    with path.open("r", encoding="utf-8", newline="") as file:
+        return list(csv.DictReader(file))
+
+
 def load_experiment_result(experiment: dict):
+    experiment_name = experiment["experiment_name"]
     budget = experiment["budget"]
     output_dir = experiment["path"]
 
     if not output_dir.exists():
-        print(f"Warning: missing experiment folder, skipping: {output_dir}")
+        print(
+            f"Warning: missing experiment folder for {experiment_name}, "
+            f"skipping: {output_dir}"
+        )
         return None
 
     metrics_path = output_dir / "metrics.csv"
     rank_pattern_path = output_dir / "rank_pattern.csv"
     layer_scores_path = output_dir / "layer_scores.csv"
+    allocation_history_path = output_dir / "allocation_history.csv"
 
     missing_files = [
         path
@@ -87,13 +109,23 @@ def load_experiment_result(experiment: dict):
         value_field="score",
         value_type=float,
     )
+    allocation_history = []
+    if allocation_history_path.exists():
+        allocation_history = read_table_csv(allocation_history_path)
+    else:
+        print(
+            f"Warning: optional allocation history not found for "
+            f"{experiment_name}: {allocation_history_path}"
+        )
 
     return {
+        "experiment_name": experiment_name,
         "budget": budget,
         "output_dir": str(output_dir),
         "metrics": metrics,
         "rank_pattern": rank_pattern,
         "layer_scores": layer_scores,
+        "allocation_history": allocation_history,
     }
 
 
@@ -107,6 +139,32 @@ def to_int(value):
     if value in (None, ""):
         return None
     return int(float(value))
+
+
+def percent_reduction(baseline_value, adaptive_value):
+    baseline = to_float(baseline_value)
+    adaptive = to_float(adaptive_value)
+
+    if baseline in (None, 0) or adaptive is None:
+        return None
+
+    return 100.0 * (baseline - adaptive) / baseline
+
+
+def accuracy_drop(baseline_value, adaptive_value):
+    baseline = to_float(baseline_value)
+    adaptive = to_float(adaptive_value)
+
+    if baseline is None or adaptive is None:
+        return None
+
+    return baseline - adaptive
+
+
+def format_optional_float(value):
+    if value is None:
+        return ""
+    return f"{value:.6f}"
 
 
 def extract_layer_and_module(layer_name: str):
@@ -145,18 +203,16 @@ def save_final_summary(results: list):
     summary_path = FINAL_PLOTS_DIR / "final_summary.csv"
 
     fieldnames = [
+        "experiment_name",
         "budget",
-        "output_dir",
         "baseline_accuracy",
         "baseline_loss",
         "baseline_trainable_params",
         "adaptive_accuracy",
         "adaptive_loss",
         "adaptive_trainable_params",
-        "rank_2_count",
-        "rank_4_count",
-        "rank_6_count",
-        "rank_8_count",
+        "parameter_reduction_percent",
+        "accuracy_drop",
     ]
 
     with summary_path.open("w", encoding="utf-8", newline="") as file:
@@ -164,10 +220,17 @@ def save_final_summary(results: list):
         writer.writeheader()
         for result in results:
             metrics = result["metrics"]
-            rank_counts = count_ranks(result["rank_pattern"])
+            reduction = percent_reduction(
+                metrics.get("baseline_trainable_params"),
+                metrics.get("adaptive_trainable_params"),
+            )
+            drop = accuracy_drop(
+                metrics.get("baseline_accuracy"),
+                metrics.get("adaptive_accuracy"),
+            )
             writer.writerow({
+                "experiment_name": result["experiment_name"],
                 "budget": result["budget"],
-                "output_dir": result["output_dir"],
                 "baseline_accuracy": metrics.get("baseline_accuracy"),
                 "baseline_loss": metrics.get("baseline_loss"),
                 "baseline_trainable_params": metrics.get(
@@ -178,10 +241,8 @@ def save_final_summary(results: list):
                 "adaptive_trainable_params": metrics.get(
                     "adaptive_trainable_params"
                 ),
-                "rank_2_count": rank_counts.get(2, 0),
-                "rank_4_count": rank_counts.get(4, 0),
-                "rank_6_count": rank_counts.get(6, 0),
-                "rank_8_count": rank_counts.get(8, 0),
+                "parameter_reduction_percent": format_optional_float(reduction),
+                "accuracy_drop": format_optional_float(drop),
             })
 
     print(f"Saved summary: {summary_path}")
@@ -365,7 +426,13 @@ def main():
     save_final_summary(results)
 
     if not results:
-        print("Warning: no experiment results found. No plots were generated.")
+        expected_folders = ", ".join(
+            str(experiment["path"])
+            for experiment in EXPERIMENTS
+        )
+        print("Warning: no valid fair-comparison results found.")
+        print(f"Expected folders: {expected_folders}")
+        print("No plots were generated.")
         return
 
     results = sorted(results, key=lambda item: item["budget"])

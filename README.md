@@ -548,6 +548,23 @@ python run_experiment.py --config configs/fair_budget_144.yaml
 python run_experiment.py --config configs/fair_budget_192.yaml
 ```
 
+### Final thesis plots
+
+After running the fair-comparison experiments, generate the final thesis-ready
+plots with:
+
+```bash
+python generate_final_plots.py
+```
+
+The script reads `outputs/fair_budget_96`, `outputs/fair_budget_144`, and
+`outputs/fair_budget_192`, then saves the consolidated figures and summary CSV
+under:
+
+```text
+outputs/final_plots/
+```
+
 <!-- ESPAÑOL:
 Si luego haces experimentos con varias seeds, agrega algo así:
 
