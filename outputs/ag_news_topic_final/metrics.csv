@@ -1,0 +1,2 @@
+baseline_accuracy,baseline_loss,baseline_trainable_params,adaptive_accuracy,adaptive_loss,adaptive_trainable_params
+0.532,1.2556017637252808,294912,0.523,1.2608476877212524,147456

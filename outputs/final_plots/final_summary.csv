@@ -1,1 +1,4 @@
-budget,output_dir,baseline_accuracy,baseline_loss,baseline_trainable_params,adaptive_accuracy,adaptive_loss,adaptive_trainable_params,rank_2_count,rank_4_count,rank_6_count,rank_8_count
+experiment_name,budget,baseline_accuracy,baseline_loss,baseline_trainable_params,adaptive_accuracy,adaptive_loss,adaptive_trainable_params,parameter_reduction_percent,accuracy_drop
+fair_budget_96,96,0.705,0.6608867049217224,147456,0.693,0.6652300953865051,147456,0.000000,0.012000
+fair_budget_144,144,0.699,0.6597291231155396,221184,0.703,0.6601586937904358,221184,0.000000,-0.004000
+fair_budget_192,192,0.717,0.6601086854934692,294912,0.717,0.6601086854934692,294912,0.000000,0.000000
