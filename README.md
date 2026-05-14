@@ -717,7 +717,7 @@ If you use this repository or refer to this work, please cite it as:
 @mastersthesis{mendoza2026dulora,
   title={Dynamic Utility-based LoRA Rank Allocation for Efficient Transformer Fine-Tuning},
   author={Mendoza, Duvan},
-  school={MEPhI - Moscow Engineering Physics Institute},
+  university={MEPhI - Moscow Engineering Physics Institute},
   year={2026}
 }
 ```
