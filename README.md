@@ -135,6 +135,12 @@ src/rank_allocator.py
 
 ## Adaptive Rank Allocation Algorithm
 
+### Method Overview
+
+![Adaptive Gradient-Aware LoRA workflow](docs/figures/adaptive_lora_workflow.png)
+
+Figure: Overall workflow of the adaptive gradient-aware LoRA rank allocation algorithm.
+
 DULoRA uses a gradient-aware rank allocation strategy.
 
 Let each LoRA target layer be represented as:
