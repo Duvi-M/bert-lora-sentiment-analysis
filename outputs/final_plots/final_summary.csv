@@ -1,0 +1,1 @@
+budget,output_dir,baseline_accuracy,baseline_loss,baseline_trainable_params,adaptive_accuracy,adaptive_loss,adaptive_trainable_params,rank_2_count,rank_4_count,rank_6_count,rank_8_count
